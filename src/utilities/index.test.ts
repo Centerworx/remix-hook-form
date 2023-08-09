@@ -11,6 +11,15 @@ import {
 } from "./index";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  FieldError,
+  FieldErrors,
+  FieldErrorsImpl,
+  FieldValues,
+  InternalFieldErrors,
+} from "react-hook-form";
+
+type T = FieldValues;
 
 describe("createFormData", () => {
   it("should create a FormData object with the provided data", () => {
@@ -118,8 +127,11 @@ describe("mergeErrors", () => {
     const backendErrors: any = {
       username: { message: "This field is required" },
     };
+    const expectedErrors: any = {
+      username: { message: "This field is required", type: "custom" },
+    };
     const mergedErrors = mergeErrors({}, backendErrors);
-    expect(mergedErrors).toEqual(backendErrors);
+    expect(mergedErrors).toEqual(expectedErrors);
   });
 
   it("should return the frontend errors if backend errors is not provided", () => {
@@ -128,11 +140,53 @@ describe("mergeErrors", () => {
     expect(mergedErrors).toEqual(frontendErrors);
   });
 
+  it("should flatten errors if under errors object", () => {
+    const frontendErrors: any = {};
+    const backendErrors: any = {
+      errors: {
+        password: { message: "Password is required" },
+      },
+    };
+    const expectedErrors: FieldErrors = {
+      password: { message: "Password is required", type: "custom" },
+    };
+    const mergedErrors = mergeErrors(frontendErrors, backendErrors);
+    expect(mergedErrors).toEqual(expectedErrors);
+  });
+
+  it("should set proper react-hook-form server error with type 400", () => {
+    const frontendErrors: FieldErrors = {};
+    const backendErrors: any = {
+      root: {
+        serverError: { message: "Password is required" },
+      },
+    };
+    const expectedErrors: FieldErrors = {
+      "root.serverError": { message: "Password is required", type: "400" },
+    };
+    const mergedErrors = mergeErrors(frontendErrors, backendErrors);
+    expect(mergedErrors).toEqual(expectedErrors);
+  });
+
+  it("should set proper react-hook-form random error with type random", () => {
+    const frontendErrors: FieldErrors = {};
+    const backendErrors: any = {
+      root: {
+        random: { message: "Password is required" },
+      },
+    };
+    const expectedErrors: FieldErrors = {
+      "root.random": { message: "Password is required", type: "random" },
+    };
+    const mergedErrors = mergeErrors(frontendErrors, backendErrors);
+    expect(mergedErrors).toEqual(expectedErrors);
+  });
+
   it("should merge nested objects recursively", () => {
-    const frontendErrors: any = {
-      password: { message: "Password is required" },
-      confirmPassword: { message: "Passwords do not match" },
-      profile: { firstName: { message: "First name is required" } },
+    const frontendErrors: FieldErrors<FieldValues> = {
+      password: { message: "Password is required", type: "required" },
+      confirmPassword: { message: "Passwords do not match", type: "required" },
+      firstName: { message: "First name is required", type: "required" },
     };
     const backendErrors: any = {
       confirmPassword: { message: "Password confirmation is required" },
@@ -142,13 +196,14 @@ describe("mergeErrors", () => {
       },
     };
     const expectedErrors = {
-      password: { message: "Password is required" },
-      confirmPassword: { message: "Password confirmation is required" },
-      profile: {
-        firstName: { message: "First name is required" },
-        lastName: { message: "Last name is required" },
-        address: { street: { message: "Street is required" } },
+      password: { message: "Password is required", type: "required" },
+      confirmPassword: {
+        message: "Password confirmation is required",
+        type: "custom",
       },
+      firstName: { message: "First name is required", type: "required" },
+      lastName: { message: "Last name is required", type: "custom" },
+      street: { message: "Street is required", type: "custom" },
     };
     const mergedErrors = mergeErrors(frontendErrors, backendErrors);
     expect(mergedErrors).toEqual(expectedErrors);
@@ -162,7 +217,7 @@ describe("mergeErrors", () => {
       username: { message: "The username is already taken" },
     };
     const expectedErrors = {
-      username: { message: "The username is already taken" },
+      username: { message: "The username is already taken", type: "custom" },
     };
     const mergedErrors = mergeErrors(frontendErrors, backendErrors);
     expect(mergedErrors).toEqual(expectedErrors);
