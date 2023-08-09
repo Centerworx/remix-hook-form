@@ -3,12 +3,12 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Code-Forge-Net/remix-hook-form?style=social)
 ![npm](https://img.shields.io/npm/v/remix-hook-form?style=plastic)
 ![GitHub](https://img.shields.io/github/license/Code-Forge-Net/remix-hook-form?style=plastic)
-![npm](https://img.shields.io/npm/dy/remix-hook-form?style=plastic) 
-![GitHub top language](https://img.shields.io/github/languages/top/Code-Forge-Net/remix-hook-form?style=plastic) 
+![npm](https://img.shields.io/npm/dy/remix-hook-form?style=plastic)
+![GitHub top language](https://img.shields.io/github/languages/top/Code-Forge-Net/remix-hook-form?style=plastic)
 
 Remix-hook-form is a powerful and lightweight wrapper around [react-hook-form](https://react-hook-form.com/) that streamlines the process of working with forms and form data in your [Remix](https://remix.run) applications. With a comprehensive set of hooks and utilities, you'll be able to easily leverage the flexibility of react-hook-form without the headache of boilerplate code.
 
-And the best part? Remix-hook-form has zero dependencies, making it easy to integrate into your existing projects and workflows. Say goodbye to bloated dependencies and hello to a cleaner, more efficient development process with Remix-hook-form. 
+And the best part? Remix-hook-form has zero dependencies, making it easy to integrate into your existing projects and workflows. Say goodbye to bloated dependencies and hello to a cleaner, more efficient development process with Remix-hook-form.
 
 Oh, and did we mention that this is fully Progressively enhanced? That's right, you can use this with or without javascript!
 
@@ -159,7 +159,7 @@ If the form is submitted without js it will try to parse the formData object and
 getValidatedFormData is a utility function that can be used to validate form data in your action. It takes two arguments: the request object and the resolver function. It returns an object with three properties: `errors`, `receivedValues` and `data`. If there are no errors, `errors` will be `undefined`. If there are errors, `errors` will be an object with the same shape as the `errors` object returned by `useRemixForm`. If there are no errors, `data` will be an object with the same shape as the `data` object returned by `useRemixForm`.
 
 The `receivedValues` property allows you to set the default values of your form to the values that were received from the request object. This is useful if you want to display the form again with the values that were submitted by the user when there is no JS present
- 
+
  ### Example with errors only
 ```jsx
 /** all the same code from above */
@@ -277,7 +277,7 @@ If you're using a GET request formData is not available on the request so you ca
   - `onInvalid`: can be passed into the function to override the default behavior of the `handleSubmit` error case provided by the hook.
 - `submitConfig`: allows you to pass additional configuration to the `useSubmit` function from Remix, such as `{ replace: true }` to replace the current history entry instead of pushing a new one.
 - `submitData`: allows you to pass additional data to the backend when the form is submitted.
-
+- `shouldResetActionData`: if set to false useActionData from remix will return to it's default behavior and re-add server errors on each re-render. `Default: true`
 
 The hook acts almost identically to the `react-hook-form` hook, with the exception of the `handleSubmit` function, and the `formState.errors`.
 
@@ -301,7 +301,7 @@ This is achieved by using `useActionData` from `@remix-run/react` to get the dat
   const { ... } = useRemixForm({
     ...ALL_THE_SAME_CONFIG_AS_REACT_HOOK_FORM,
     submitHandlers: {
-      onValid: data => { 
+      onValid: data => {
         // Do something with the formData
       },
       onInvalid: errors => {
@@ -344,7 +344,7 @@ Identical to the [`FormProvider`](https://react-hook-form.com/api/formprovider/)
 ```jsx
 export default function Form() {
   const methods = useRemixForm();
- 
+
   return (
     <RemixFormProvider {...methods} > // pass all methods into the context
       <form onSubmit={methods.handleSubmit}>
@@ -363,7 +363,7 @@ Exactly the same as [`useFormContext`](https://react-hook-form.com/api/useformco
 ```jsx
 export default function Form() {
   const methods = useRemixForm();
- 
+
 
   return (
     <RemixFormProvider {...methods} > // pass all methods into the context
@@ -383,7 +383,7 @@ const NestedInput = () => {
 ```
 
 
-## Support 
+## Support
 
 If you like the project, please consider supporting us by giving a ⭐️ on Github.
 ## License
